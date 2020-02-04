@@ -4,6 +4,7 @@ load(
     "@org_tensorflow//tensorflow:tensorflow.bzl",
     "if_cuda",
     "tf_cc_shared_object",
+    "tf_py_wrap_cc",
 )
 load(
     "@org_tensorflow//tensorflow/lite:build_def.bzl",
@@ -83,6 +84,7 @@ cc_library(
     ],
     includes = [
         ".",
+        "ctcdecode",
         "ctcdecode/third_party/ThreadPool",
     ] + OPENFST_INCLUDES_PLATFORM,
     deps = [":kenlm"]
@@ -177,6 +179,25 @@ tf_cc_shared_object(
     }) + if_cuda([
         "//tensorflow/core:core",
     ]) + [":decoder"],
+)
+
+tf_py_wrap_cc(
+    name = "ctcdecode_wrap_internal",
+    srcs = ["ctcdecode/swigwrapper.i"],
+    swig_includes = [
+        "ctcdecode/numpy.i",
+    ],
+    deps = [
+        ":decoder",
+        "//third_party/py/numpy:headers",
+        "//third_party/python_runtime:headers",
+    ],
+)
+
+py_library(
+    name = "ds_ctcdecode",
+    srcs = ["ctcdecode/__init__.py"],
+    deps = [":ctcdecode_wrap_internal"],
 )
 
 genrule(

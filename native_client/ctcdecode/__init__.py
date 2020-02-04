@@ -1,9 +1,9 @@
 from __future__ import absolute_import, division, print_function
 
-from . import swigwrapper
-from .swigwrapper import Alphabet
+from . import ctcdecode_wrap_internal
+from .ctcdecode_wrap_internal import Alphabet
 
-class Scorer(swigwrapper.Scorer):
+class Scorer(ctcdecode_wrap_internal.Scorer):
     """Wrapper for Scorer.
 
     :param alpha: Language model weight.
@@ -19,7 +19,7 @@ class Scorer(swigwrapper.Scorer):
         # Allow bare initialization
         if alphabet:
             serialized = alphabet.serialize()
-            native_alphabet = swigwrapper.Alphabet()
+            native_alphabet = Alphabet()
             err = native_alphabet.deserialize(serialized, len(serialized))
             if err != 0:
                 raise ValueError("Error when deserializing alphabet.")
@@ -68,11 +68,11 @@ def ctc_beam_search_decoder(probs_seq,
     :rtype: list
     """
     serialized = alphabet.serialize()
-    native_alphabet = swigwrapper.Alphabet()
+    native_alphabet = Alphabet()
     err = native_alphabet.deserialize(serialized, len(serialized))
     if err != 0:
         raise ValueError("Error when deserializing alphabet.")
-    beam_results = swigwrapper.ctc_beam_search_decoder(
+    beam_results = ctcdecode_wrap_internal.ctc_beam_search_decoder(
         probs_seq, native_alphabet, beam_size, cutoff_prob, cutoff_top_n,
         scorer)
     beam_results = [(res.confidence, alphabet.decode(res.tokens)) for res in beam_results]
@@ -115,11 +115,11 @@ def ctc_beam_search_decoder_batch(probs_seq,
     :rtype: list
     """
     serialized = alphabet.serialize()
-    native_alphabet = swigwrapper.Alphabet()
+    native_alphabet = Alphabet()
     err = native_alphabet.deserialize(serialized, len(serialized))
     if err != 0:
         raise ValueError("Error when deserializing alphabet.")
-    batch_beam_results = swigwrapper.ctc_beam_search_decoder_batch(probs_seq, seq_lengths, native_alphabet, beam_size, num_processes, cutoff_prob, cutoff_top_n, scorer)
+    batch_beam_results = ctcdecode_wrap_internal.ctc_beam_search_decoder_batch(probs_seq, seq_lengths, native_alphabet, beam_size, num_processes, cutoff_prob, cutoff_top_n, scorer)
     batch_beam_results = [
         [(res.confidence, alphabet.decode(res.tokens)) for res in beam_results]
         for beam_results in batch_beam_results

@@ -25,6 +25,11 @@ clean: clean-keep-common
 	rm -f common.a
 
 bindings: clean-keep-common
+	bazel build
+	copy setup.py, manifest, source files, binaries to folder structure
+	or adjust folder structure in repository
+	python setup.py bdist_wheel
+
 	pip install --quiet $(PYTHON_PACKAGES) wheel==0.33.6 setuptools==39.1.0
 	AS=$(AS) CC=$(CC) CXX=$(CXX) LD=$(LD) CFLAGS="$(CFLAGS) $(CXXFLAGS)" LDFLAGS="$(LDFLAGS_NEEDED)" $(PYTHON_PATH) $(NUMPY_INCLUDE) python ./setup.py build_ext --num_processes $(NUM_PROCESSES) $(PYTHON_PLATFORM_NAME) $(SETUP_FLAGS)
 	find temp_build -type f -name "*.o" -delete
