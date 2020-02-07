@@ -67,8 +67,6 @@ if __name__ == "__main__":
         feature = _download_and_preprocess_data(url, file, data_dir)
         if feature:
             features.append(feature)
-        if i > 5:
-            break
     df = pandas.DataFrame(data=features,
                           columns=["wav_filename", "wav_filesize", "transcript"])
     df.to_csv(os.path.join(data_dir, "custom_data.csv"), index=False)
